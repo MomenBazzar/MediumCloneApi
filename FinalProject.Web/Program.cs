@@ -1,8 +1,15 @@
+using FinalProject.Data;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.AddDbContext<MediumDbContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("MediumClone"));
+});
 
 var app = builder.Build();
 
