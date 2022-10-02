@@ -4,6 +4,8 @@ using FinalProject.Data.Entities;
 namespace FinalProject.Data.Repositories;
 public class UserRepository : GenericRepository<User>, IUserRepository
 {
+    public string RoleStandard { get; } = "Standard";
+    public string RoleAdmin { get; } = "Admin";
     public UserRepository(MediumDbContext context) : base(context)
     {
     }
@@ -66,5 +68,10 @@ public class UserRepository : GenericRepository<User>, IUserRepository
     public void Update(User user)
     {
         _context.Update(user);
+    }
+
+    public async Task<User> GetByUsernameAsync(string username)
+    {
+        return await _context.Users.FindAsync(username);
     }
 }

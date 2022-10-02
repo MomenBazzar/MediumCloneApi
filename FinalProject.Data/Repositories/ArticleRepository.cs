@@ -7,6 +7,11 @@ public class ArticleRepository : GenericRepository<Article>, IArticleRepository
     {
     }
 
+    public async Task<Article> GetByIdAsync(int id)
+    {
+        return await _context.Articles.FindAsync(id);
+    }
+
     public void Remove(Article article)
     {
         _context.Articles.Remove(article);

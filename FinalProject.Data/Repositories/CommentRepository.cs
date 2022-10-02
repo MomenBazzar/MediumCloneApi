@@ -7,6 +7,11 @@ public class CommentRepository : GenericRepository<Comment>, ICommentRepository
     {
     }
 
+    public async Task<Comment> GetByIdAsync(int id)
+    {
+        return await _context.Comments.FindAsync(id);
+    }
+
     public void Remove(Comment comment)
     {
         _context.Comments.Remove(comment);
