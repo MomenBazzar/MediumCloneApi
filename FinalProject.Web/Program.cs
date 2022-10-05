@@ -4,6 +4,8 @@ using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using FinalProject.Data.Repositories;
+using FinalProject.Web.Helper;
+using FinalProject.Data.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,7 +20,14 @@ builder.Services.AddDbContext<MediumDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("MediumClone"));
 });
 
+//builder.Services.AddDefaultIdentity<User>(options =>
+//{
+    
+//}).AddEntityFrameworkStores<MediumDbContext>();
+
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+builder.Services.AddScoped<IJwtAuthenticationManager, JwtAuthenticationManager>();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

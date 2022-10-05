@@ -2,24 +2,21 @@
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
-using FinalProject.Data.Repositories;
-using FinalProject.Data.Models;
+
 
 namespace FinalProject.Web.Helper;
-public class JwtAuthenticationManager
+public class JwtAuthenticationManager : IJwtAuthenticationManager
 {
     private readonly string key;
-    private readonly IUserRepository repository;
     private readonly IConfiguration configuration;
 
-    public JwtAuthenticationManager(IUserRepository repository, IConfiguration configuration)
+    public JwtAuthenticationManager(IConfiguration configuration)
     {
-        this.repository = repository;
         this.configuration = configuration;
         key = configuration.GetSection("Jwt:Key").Value;
     }
 
-    public string CreateToken(UserDto user)
+    public string CreateToken(string username)
     {
         var timeToLive = configuration.GetValue<int>("Jwt:TokenHours");
 
@@ -29,11 +26,7 @@ public class JwtAuthenticationManager
         {
             Subject =  new ClaimsIdentity(new Claim[]
             {
-                new Claim(ClaimTypes.NameIdentifier, user.Username),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.GivenName, user.FirstName),
-                new Claim(ClaimTypes.Surname, user.LastName),
-                new Claim(ClaimTypes.Role, user.Role)
+                new Claim(ClaimTypes.NameIdentifier, username),
             }),
             Expires = DateTime.UtcNow.AddHours(timeToLive),
             SigningCredentials = new SigningCredentials(
