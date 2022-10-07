@@ -28,14 +28,14 @@ namespace FinalProject.Web.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserDto>>> GetAll()
+        public ActionResult<IEnumerable<UserDto>> GetAll()
         {
             var users = userManager.Users.ToList();
             var usersDto = mapper.Map<IEnumerable<UserDto>>(users);
             return Ok(usersDto);
         }
 
-        [HttpGet("@{username}", Name = "UserInfo"), AllowAnonymous]
+        [HttpGet("{username}", Name = "UserInfo"), AllowAnonymous]
         public async Task<ActionResult<UserDto>> Get(string username)
         {
             var user = await userManager.FindByNameAsync(username);
@@ -59,12 +59,12 @@ namespace FinalProject.Web.Controllers
         {
             return !await authenticationManager.ValidateUserAsync(userLogin)
             ? Unauthorized()
-            : Ok(new { Token = await authenticationManager.CreateTokenAsync() });
+            : Ok(new { Token = authenticationManager.CreateToken() });
 
         }
 
 
-        [HttpPut("@{username}")]
+        [HttpPut("{username}")]
         public async Task<ActionResult<string>> UpdateUser(string username, [FromBody] UserUpdateDto userUpdate)
         {
             if (!string.Equals(User.Identity.Name, username, StringComparison.OrdinalIgnoreCase))

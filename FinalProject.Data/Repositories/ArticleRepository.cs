@@ -12,6 +12,12 @@ public class ArticleRepository : GenericRepository<Article>, IArticleRepository
         return await _context.Articles.FindAsync(id);
     }
 
+    public IEnumerable<Article> GetForUser(string username)
+    {
+        return _context.Articles
+                    .Where(c => c.AuthorUsername == username).ToList();
+    }
+
     public void Remove(Article article)
     {
         _context.Articles.Remove(article);

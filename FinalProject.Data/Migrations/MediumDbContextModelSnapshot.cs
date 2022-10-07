@@ -45,7 +45,7 @@ namespace FinalProject.Data.Migrations
 
                     b.HasIndex("AuthorUsername");
 
-                    b.ToTable("Articles");
+                    b.ToTable("Articles", (string)null);
                 });
 
             modelBuilder.Entity("FinalProject.Data.Entities.Comment", b =>
@@ -72,7 +72,7 @@ namespace FinalProject.Data.Migrations
 
                     b.HasIndex("AuthorUsername");
 
-                    b.ToTable("Comments");
+                    b.ToTable("Comments", (string)null);
                 });
 
             modelBuilder.Entity("FinalProject.Data.Entities.Favorite", b =>
@@ -95,7 +95,7 @@ namespace FinalProject.Data.Migrations
 
                     b.HasIndex("UserUsername");
 
-                    b.ToTable("Favorites");
+                    b.ToTable("Favorites", (string)null);
                 });
 
             modelBuilder.Entity("FinalProject.Data.Entities.Follow", b =>
@@ -118,7 +118,7 @@ namespace FinalProject.Data.Migrations
 
                     b.HasIndex("FollowerUsername");
 
-                    b.ToTable("Follows");
+                    b.ToTable("Follows", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

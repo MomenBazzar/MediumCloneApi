@@ -7,5 +7,5 @@ public interface IUserAuthenticationManager
 {
     Task<IdentityResult> RegisterUserAsync(UserCreateDto userForRegistration);
     Task<bool> ValidateUserAsync(UserLoginDto loginDto);
-    Task<string> CreateTokenAsync();
+    string CreateToken();
 }

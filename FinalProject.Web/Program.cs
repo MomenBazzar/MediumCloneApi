@@ -22,7 +22,7 @@ builder.Services.AddSwaggerGen(c =>
     {
         Title = "Medium API",
         Version = "v1",
-        Description = "Medium API.",
+        Description = "Medium API by Momen Bazzar.",
         Contact = new OpenApiContact
         {
             Name = "Momen Bazzar"
@@ -62,13 +62,17 @@ builder.Services.AddDbContext<MediumDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("MediumClone"));
 });
 
-builder.Services.AddDefaultIdentity<User>(options =>
+builder.Services.AddDefaultIdentity<User>(op =>
 {
-
+    op.Password.RequireNonAlphanumeric = false;
+    op.Password.RequireUppercase = false;
+    
 }).AddEntityFrameworkStores<MediumDbContext>()
 .AddDefaultTokenProviders();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IArticleRepository, ArticleRepository>();
+builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 
 builder.Services.AddScoped<IUserAuthenticationManager, UserAuthenticationManager>();
 

@@ -10,7 +10,7 @@ using FinalProject.Data.Models;
 namespace FinalProject.Web.Helper;
 public class UserAuthenticationManager : IUserAuthenticationManager
 {
-    private User? _user;
+    private User _user;
     private readonly IConfiguration configuration;
     private readonly UserManager<User> userManager;
     private readonly IMapper mapper;
@@ -36,10 +36,10 @@ public class UserAuthenticationManager : IUserAuthenticationManager
         return result;
     }
 
-    public async Task<string> CreateTokenAsync()
+    public string CreateToken()
     {
         var signingCredentials = GetSigningCredentials();
-        var claims = await GetClaims();
+        var claims = GetClaims();
         var tokenOptions = GenerateTokenOptions(signingCredentials, claims);
         return new JwtSecurityTokenHandler().WriteToken(tokenOptions);
     }
@@ -52,7 +52,7 @@ public class UserAuthenticationManager : IUserAuthenticationManager
         return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
     }
 
-    private async Task<List<Claim>> GetClaims()
+    private List<Claim> GetClaims()
     {
         var claims = new List<Claim>
         {

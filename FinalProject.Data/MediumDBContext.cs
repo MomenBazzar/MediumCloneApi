@@ -19,41 +19,40 @@ namespace FinalProject.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<Article>()
-                .HasOne(a => a.Author)
-                .WithMany(u => u.Articles)
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.Articles)
+                .WithOne(u => u.Author)
                 .HasForeignKey(a => a.AuthorUsername)
                 .HasPrincipalKey(u => u.UserName);
 
-            modelBuilder.Entity<Favorite>()
-                .HasOne(f => f.User)
-                .WithMany(u => u.FavoriteArticles)
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.FavoriteArticles)
+                .WithOne(f => f.User)
                 .HasForeignKey(f => f.UserUsername)
                 .HasPrincipalKey(u => u.UserName);
 
-            modelBuilder.Entity<Favorite>()
-                .HasOne(f => f.Article)
-                .WithMany(a => a.UsersLoveMe)
+            modelBuilder.Entity<Article>()
+                .HasMany(u => u.UsersLoveMe)
+                .WithOne(f => f.Article)
                 .HasForeignKey(f => f.ArticleId);
 
-            modelBuilder.Entity<Follow>()
-                .HasOne(f => f.Followed)
-                .WithMany(u => u.Followed)
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.Followed)
+                .WithOne(f => f.Followed)
                 .HasForeignKey(f => f.FollowedUsername)
                 .HasPrincipalKey(u => u.UserName);
 
-            modelBuilder.Entity<Follow>()
-                .HasOne(f => f.Follower)
-                .WithMany(u => u.Followers)
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.Followers)
+                .WithOne(f => f.Follower)
                 .HasForeignKey(f => f.FollowerUsername)
                 .HasPrincipalKey(u => u.UserName);
 
-            modelBuilder.Entity<Comment>()
-                .HasOne(c => c.Article)
-                .WithMany(a => a.Comments)
-                .HasForeignKey(c => c.ArticleId)
-                .OnDelete(DeleteBehavior.Cascade);
-
+            modelBuilder.Entity<Article>()
+                .HasMany(a => a.Comments)
+                .WithOne(c => c.Article)
+                .HasForeignKey(c => c.ArticleId);
+            
             modelBuilder.Entity<Comment>()
                 .HasOne(c => c.Author)
                 .WithMany(u => u.Comments)
