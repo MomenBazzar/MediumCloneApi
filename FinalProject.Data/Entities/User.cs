@@ -1,35 +1,23 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FinalProject.Data.Entities;
-public class User
+public class User : IdentityUser
 {
-    [Key]
-    public string Username { get; set; }
-
     [Required]
-    public string Password { get; set; }
-
-    [Required]
-    public string Email { get; set; }
-
-    [Required]
+    [PersonalData]
     public string FirstName { get; set; }
 
     [Required]
+    [PersonalData]
     public string LastName { get; set; }
 
-    [Required]
-    public string Role { get; set; }
-
-    public List<Favorite> FavoriteArticles { get; set; }
     public List<Article> Articles { get; set; }
-
-    [InverseProperty("Follower")]
+    public List<Comment> Comments { get; set; }
+    public List<Favorite> FavoriteArticles { get; set; }
     public List<Follow> Followers { get; set; }
-
-    [InverseProperty("Following")]
-    public List<Follow> Following { get; set; }
+    public List<Follow> Followed { get; set; }
 
 
 }

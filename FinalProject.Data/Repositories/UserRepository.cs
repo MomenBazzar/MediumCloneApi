@@ -14,7 +14,7 @@ public class UserRepository : GenericRepository<User>, IUserRepository
     {
         await _context.Favorites.AddAsync(new Favorite
         {
-            AuthorUsername = username,
+            UserUsername = username,
             ArticleId = articleId
         });
     }
@@ -26,7 +26,7 @@ public class UserRepository : GenericRepository<User>, IUserRepository
             new Favorite
             {
                 ArticleId = articleId,
-                AuthorUsername = username
+                UserUsername = username
             });
     }
 
@@ -35,7 +35,7 @@ public class UserRepository : GenericRepository<User>, IUserRepository
         _context.Follows.Remove(
             new Follow
             {
-                FollowingUsername = followingUsername,
+                FollowedUsername = followingUsername,
                 FollowerUsername = followerUsername
             });
     }
@@ -46,23 +46,23 @@ public class UserRepository : GenericRepository<User>, IUserRepository
             new Follow
             {
                 FollowerUsername = followerUsername,
-                FollowingUsername = followingUsername
+                FollowedUsername = followingUsername
             });
     }
 
     public IEnumerable<User> GetFollowedUsersAsync(string username)
     {
-        return _context.Follows.Where(f => f.FollowerUsername == username).Select(f => f.Following).ToList();
+        return _context.Follows.Where(f => f.FollowerUsername == username).Select(f => f.Followed).ToList();
     }
 
     public IEnumerable<User> GetFollowingUsersAsync(string username)
     {
-        return _context.Follows.Where(f => f.FollowingUsername == username).Select(f => f.Follower).ToList();
+        return _context.Follows.Where(f => f.FollowedUsername == username).Select(f => f.Follower).ToList();
     }
 
     public IEnumerable<Article> GetFavoriteArticlesAsync(string username)
     {
-        return _context.Favorites.Where(f => f.AuthorUsername == username).Select(f => f.Article).ToList();
+        return _context.Favorites.Where(f => f.UserUsername == username).Select(f => f.Article).ToList();
     }
 
     public void Update(User user)
@@ -72,6 +72,6 @@ public class UserRepository : GenericRepository<User>, IUserRepository
 
     public async Task<User> GetByUsernameAsync(string username)
     {
-        return await _context.Users.FindAsync(username);
+        return (User)await _context.Users.FindAsync(username);
     }
 }

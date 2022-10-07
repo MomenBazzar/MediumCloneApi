@@ -12,9 +12,9 @@ public class Follow
     [ForeignKey("FollowerUsername")]
     public User Follower { get; set; }
 
-    public string FollowingUsername { get; set; }
+    public string FollowedUsername { get; set; }
 
-    [ForeignKey("FollowingUsername")]
-    public User Following { get; set; }
+    [ForeignKey("FollowedUsername")]
+    public User Followed { get; set; }
 }
 

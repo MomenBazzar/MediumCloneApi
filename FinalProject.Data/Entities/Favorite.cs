@@ -7,15 +7,10 @@ public class Favorite
     [Key]
     public int Id { get; set; }
 
-    public string AuthorUsername { get; set; }
+    public string UserUsername { get; set; }
+    public User User { get; set; }
 
-    [ForeignKey("AuthorUsername")]
-    public User Author { get; set; }
-
-    [Required]
     public int ArticleId { get; set; }
-
-    [ForeignKey("ArticleId")]
     public Article Article { get; set; }
 }
 
