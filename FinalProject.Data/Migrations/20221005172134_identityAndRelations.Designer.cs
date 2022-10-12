@@ -4,6 +4,7 @@ using FinalProject.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FinalProject.Data.Migrations
 {
     [DbContext(typeof(MediumDbContext))]
-    partial class MediumDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221005172134_identityAndRelations")]
+    partial class identityAndRelations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -45,7 +47,7 @@ namespace FinalProject.Data.Migrations
 
                     b.HasIndex("AuthorUsername");
 
-                    b.ToTable("Articles", (string)null);
+                    b.ToTable("Articles");
                 });
 
             modelBuilder.Entity("FinalProject.Data.Entities.Comment", b =>
@@ -72,7 +74,7 @@ namespace FinalProject.Data.Migrations
 
                     b.HasIndex("AuthorUsername");
 
-                    b.ToTable("Comments", (string)null);
+                    b.ToTable("Comments");
                 });
 
             modelBuilder.Entity("FinalProject.Data.Entities.Favorite", b =>
@@ -95,7 +97,7 @@ namespace FinalProject.Data.Migrations
 
                     b.HasIndex("UserUsername");
 
-                    b.ToTable("Favorites", (string)null);
+                    b.ToTable("Favorites");
                 });
 
             modelBuilder.Entity("FinalProject.Data.Entities.Follow", b =>
@@ -118,7 +120,7 @@ namespace FinalProject.Data.Migrations
 
                     b.HasIndex("FollowerUsername");
 
-                    b.ToTable("Follows", (string)null);
+                    b.ToTable("Follows");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

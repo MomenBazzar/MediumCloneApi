@@ -6,12 +6,54 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using FinalProject.Data.Repositories;
 using FinalProject.Web.Helper;
 using FinalProject.Data.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Medium API",
+        Version = "v1",
+        Description = "Medium API by Momen Bazzar.",
+        Contact = new OpenApiContact
+        {
+            Name = "Momen Bazzar"
+        },
+    });
+    c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "JWT Authorization header using the Bearer scheme."
+    });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
+                    },
+                    new string[] {}
+                }
+            });
+});
 
 builder.Services.AddSwaggerGen();
 
@@ -20,34 +62,44 @@ builder.Services.AddDbContext<MediumDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("MediumClone"));
 });
 
-//builder.Services.AddDefaultIdentity<User>(options =>
-//{
+builder.Services.AddDefaultIdentity<User>(op =>
+{
+    op.Password.RequireNonAlphanumeric = false;
+    op.Password.RequireUppercase = false;
     
-//}).AddEntityFrameworkStores<MediumDbContext>();
+}).AddEntityFrameworkStores<MediumDbContext>()
+.AddDefaultTokenProviders();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IArticleRepository, ArticleRepository>();
+builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 
-builder.Services.AddScoped<IJwtAuthenticationManager, JwtAuthenticationManager>();
+builder.Services.AddScoped<IUserAuthenticationManager, UserAuthenticationManager>();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 // ///////////////////////////////////
 
-var key = builder.Configuration.GetValue<string>("Jwt:Key");
-
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
+var jwtConfig = builder.Configuration.GetSection("Jwt");
+var secretKey = jwtConfig["key"];
+builder.Services.AddAuthentication(opt =>
+{
+    opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
     {
-        options.RequireHttpsMetadata = false;
-        options.SaveToken = true;
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
-            ValidateIssuer = false,
-            ValidateAudience = false
-        };
-    });
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtConfig["validIssuer"],
+        ValidAudience = jwtConfig["validAudience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
+    };
+});
 
 // ///////////////////////////////////
 

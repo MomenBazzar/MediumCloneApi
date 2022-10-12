@@ -1,6 +1,12 @@
-﻿namespace FinalProject.Data.Models;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace FinalProject.Data.Models;
 public class UserLoginDto
 {
-    public string Username { get; set; }
+    [Required]
+    public string UserName { get; set; }
+
+    [Required]
+    [MinLength(8)]
     public string Password { get; set; }
 }

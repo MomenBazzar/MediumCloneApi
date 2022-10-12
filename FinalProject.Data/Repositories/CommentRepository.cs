@@ -17,4 +17,9 @@ public class CommentRepository : GenericRepository<Comment>, ICommentRepository
         _context.Comments.Remove(comment);
     }
 
+    public IEnumerable<Comment> GetCommentsForArticle(int id)
+    {
+        return _context.Comments
+                    .Where(c => c.ArticleId == id).ToList();
+    }
 }
