@@ -10,6 +10,19 @@ public class UserRepository : GenericRepository<User>, IUserRepository
     {
     }
 
+    public IEnumerable<Article> GetFavoriteArticles(string username)
+    {
+        return _context.Favorites.Where(f => f.UserUsername == username).Select(f => f.Article).ToList();
+    }
+
+    public Favorite GetFavorite(string username, int articleId)
+    {
+        return _context.Favorites
+            .Where(f => f.UserUsername == username)
+            .Where(f => f.ArticleId == articleId)
+            .FirstOrDefault();
+    }
+
     public async Task AddArticleToFavotiesAsync(string username, int articleId)
     {
         await _context.Favorites.AddAsync(new Favorite
@@ -30,23 +43,20 @@ public class UserRepository : GenericRepository<User>, IUserRepository
             });
     }
 
-    public void UnfollowUser(string followerUsername, string followingUsername)
+    public void UnfollowUser(string followerUsername, string followedUsername)
     {
-        _context.Follows.Remove(
-            new Follow
-            {
-                FollowedUsername = followingUsername,
-                FollowerUsername = followerUsername
-            });
+        var follow = GetFollow(followerUsername, followedUsername);
+
+        _context.Follows.Remove(follow);
     }
 
-    public async Task FollowUserAsync(string followerUsername, string followingUsername)
+    public async Task FollowUserAsync(string followerUsername, string followedUsername)
     {
         await _context.Follows.AddAsync(
             new Follow
             {
                 FollowerUsername = followerUsername,
-                FollowedUsername = followingUsername
+                FollowedUsername = followedUsername
             });
     }
 
@@ -55,14 +65,16 @@ public class UserRepository : GenericRepository<User>, IUserRepository
         return _context.Follows.Where(f => f.FollowerUsername == username).Select(f => f.Followed).ToList();
     }
 
-    public IEnumerable<User> GetFollowingUsersAsync(string username)
+    public IEnumerable<User> GetFollowersUsersAsync(string username)
     {
         return _context.Follows.Where(f => f.FollowedUsername == username).Select(f => f.Follower).ToList();
     }
-
-    public IEnumerable<Article> GetFavoriteArticlesAsync(string username)
+    public Follow GetFollow(string followerUsername, string followedUsername)
     {
-        return _context.Favorites.Where(f => f.UserUsername == username).Select(f => f.Article).ToList();
+        return _context.Follows
+            .Where(f => f.FollowedUsername == followedUsername)
+            .Where(f => f.FollowerUsername == followerUsername)
+            .FirstOrDefault();
     }
 
     public void Update(User user)
@@ -74,4 +86,5 @@ public class UserRepository : GenericRepository<User>, IUserRepository
     {
         return (User)await _context.Users.FindAsync(username);
     }
+
 }
