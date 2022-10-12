@@ -53,7 +53,11 @@ namespace FinalProject.Web.Controllers
         [HttpPost()]
         public async Task<IActionResult> Post(int articleId, [FromBody] CommentCreateDto commentCreate)
         {
-           
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var article = await articleRepository.GetByIdAsync(articleId);
             if (article == null) return NotFound("Article Not Found");
 

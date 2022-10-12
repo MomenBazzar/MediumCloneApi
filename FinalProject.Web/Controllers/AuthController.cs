@@ -14,22 +14,22 @@ namespace FinalProject.Web.Controllers
     [AllowAnonymous]
     public class AuthController : ControllerBase
     {
-        private readonly UserManager<User> userManager;
-        private readonly IMapper mapper;
+
         private readonly IUserAuthenticationManager authenticationManager;
 
-        public AuthController(UserManager<User> userManager,
-            IMapper mapper,
-            IUserAuthenticationManager authenticationManager)
+        public AuthController(IUserAuthenticationManager authenticationManager)
         {
-            this.userManager = userManager;
-            this.mapper = mapper;
             this.authenticationManager = authenticationManager;
         }
 
         [HttpPost("Register")]
         public async Task<ActionResult<UserDto>> Register(UserCreateDto userCreate)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var userResult = await authenticationManager.RegisterUserAsync(userCreate);
             return !userResult.Succeeded ? new BadRequestObjectResult(userResult) : new CreatedResult("UserInfo", userCreate);
 
@@ -38,6 +38,11 @@ namespace FinalProject.Web.Controllers
         [HttpPost("Login")]
         public async Task<ActionResult<string>> Login(UserLoginDto userLogin)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             return !await authenticationManager.ValidateUserAsync(userLogin)
             ? Unauthorized()
             : Ok(new { Token = authenticationManager.CreateToken() });

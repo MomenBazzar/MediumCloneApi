@@ -57,16 +57,17 @@ namespace FinalProject.Web.Controllers
             return Ok(articleDto);
         }
 
-        [HttpPost("~/api/user/{username}/article")]
-        public async Task<IActionResult> Post(string username, [FromBody] ArticleCreateDto articleCreate)
+        [HttpPost()]
+        public async Task<IActionResult> Post([FromBody] ArticleCreateDto articleCreate)
         {
-            var user = await userManager.FindByNameAsync(username);
-            if (user == null) return NotFound("User");
-
-            if (!string.Equals(User.Identity.Name, username, StringComparison.OrdinalIgnoreCase))
+            if (!ModelState.IsValid)
             {
-                return Unauthorized("you are not allowed to add articles for other users");
+                return BadRequest(ModelState);
             }
+
+            var username = User.Identity.Name;
+
+            var user = await userManager.FindByNameAsync(username);
             
             var article = mapper.Map<Article>(articleCreate);
             article.Author = user;
@@ -78,19 +79,23 @@ namespace FinalProject.Web.Controllers
             return CreatedAtRoute("ArticleInfo", new { id = articleDto.Id }, articleDto);
         }
 
-        [HttpPut("~/api/user/{username}/article/{id}")]
-        public async Task<IActionResult> Put(string username, int id, [FromBody] ArticleUpdateDto articleUpdate)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Put(int id, [FromBody] ArticleUpdateDto articleUpdate)
         {
-            var user = await userManager.FindByNameAsync(username);
-            if (user == null) return NotFound("User");
-
-            if (!string.Equals(User.Identity.Name, username, StringComparison.OrdinalIgnoreCase))
+            if (!ModelState.IsValid)
             {
-                return Unauthorized("you are not allowed to update articles for other users");
+                return BadRequest(ModelState);
             }
+
+            var username = User.Identity.Name;
 
             var article = await articleRepository.GetByIdAsync(id);
             if (article == null) return NotFound($"there are no article found with id={id}");
+
+            if (!string.Equals(article.AuthorUsername, username, StringComparison.OrdinalIgnoreCase))
+            {
+                return Unauthorized("you are not allowed to update articles for other users");
+            }
 
             article.Title = articleUpdate.Title;
             article.Body = articleUpdate.Body;
@@ -101,19 +106,17 @@ namespace FinalProject.Web.Controllers
             return NoContent();
         }
 
-        [HttpDelete("~/api/user/{username}/article/{id}")]
-        public async Task<IActionResult> Delete(string username, int id)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
         {
-            var user = await userManager.FindByNameAsync(username);
-            if (user == null) return NotFound("User");
+            var article = await articleRepository.GetByIdAsync(id);
+            if (article == null) return NotFound($"there are no article found with id={id}");;
 
-            if (!string.Equals(User.Identity.Name, username, StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(User.Identity.Name, article.AuthorUsername, StringComparison.OrdinalIgnoreCase))
             {
                 return Unauthorized("you are not allowed to Delete articles for other users");
             }
 
-            var article = await articleRepository.GetByIdAsync(id);
-            if (article == null) return NotFound($"there are no article found with id={id}");
             articleRepository.Remove(article);
             await articleRepository.SaveAsync();
 

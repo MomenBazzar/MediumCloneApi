@@ -34,13 +34,8 @@ public class UserRepository : GenericRepository<User>, IUserRepository
 
     public void RemoveArticleFromFavoties(string username, int articleId)
     {
-
-        _context.Favorites.Remove(
-            new Favorite
-            {
-                ArticleId = articleId,
-                UserUsername = username
-            });
+        var favorite = GetFavorite(username, articleId);
+        _context.Favorites.Remove(favorite);
     }
 
     public void UnfollowUser(string followerUsername, string followedUsername)

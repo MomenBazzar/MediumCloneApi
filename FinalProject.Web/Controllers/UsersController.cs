@@ -17,16 +17,13 @@ namespace FinalProject.Web.Controllers
     {
         private readonly UserManager<User> userManager;
         private readonly IMapper mapper;
-        private readonly IUserRepository userRepository;
 
         public UsersController(UserManager<User> userManager, 
             IMapper mapper,
-            IUserAuthenticationManager authenticationManager,
-            IUserRepository userRepository)
+            IUserAuthenticationManager authenticationManager)
         {
             this.userManager = userManager;
             this.mapper = mapper;
-            this.userRepository = userRepository;
         }
 
         [HttpGet]
@@ -54,6 +51,11 @@ namespace FinalProject.Web.Controllers
             if (!string.Equals(User.Identity.Name, username, StringComparison.OrdinalIgnoreCase))
             {
                 return Unauthorized("You are not allowed to update this object");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
             }
 
             var user = await userManager.FindByNameAsync(username);
